@@ -1,13 +1,14 @@
 package com.makowski.task_service.controller;
 
+import com.makowski.task_service.entity.Task;
 import com.makowski.task_service.service.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -17,22 +18,35 @@ public class TaskController {
 
     private TaskService taskService;
 
-    //endpoint for testing purposes
-    @GetMapping(value = "/username")
-    public ResponseEntity<String> currentUserName(HttpServletRequest request) {
-        return new ResponseEntity<>((String) request.getAttribute("username"), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<Task> addTask(HttpServletRequest request, @RequestBody String title) {
+        return new ResponseEntity<>(taskService.addTask((String) request.getAttribute("username"), title), HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteTask(HttpServletRequest request, @PathVariable Long id) {
+        taskService.deleteTask((String) request.getAttribute("username"), id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-    //add task
+    @PutMapping("/title/{id}")
+    public ResponseEntity<Task> changeTitle(HttpServletRequest request, @PathVariable Long id, @RequestBody String title) {
+        return new ResponseEntity<>(taskService.changeTitle((String) request.getAttribute("username"), id, title), HttpStatus.OK);
+    }
 
-    //delete task
+    @PutMapping("/status/{id}")
+    public ResponseEntity<Task> changeStatus(HttpServletRequest request, @PathVariable Long id) {
+        return new ResponseEntity<>(taskService.changeStatus((String) request.getAttribute("username"), id), HttpStatus.OK);
+    }
 
-    //rename task
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> getTask(HttpServletRequest request, @PathVariable Long id) {
+        return new ResponseEntity<>(taskService.getTask((String) request.getAttribute("username"), id), HttpStatus.OK);
+    }
 
-    //change status
-
-    //get task
-
+    @GetMapping
+    public ResponseEntity<List<Task>> getMyTasks(HttpServletRequest request) {
+        return new ResponseEntity<>(taskService.getMyTasks((String) request.getAttribute("username")), HttpStatus.OK);
+    }
 
 }

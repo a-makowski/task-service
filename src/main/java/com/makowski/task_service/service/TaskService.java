@@ -1,6 +1,9 @@
 package com.makowski.task_service.service;
 
 import com.makowski.task_service.entity.Task;
+import com.makowski.task_service.exceptions.AccessDeniedException;
+import com.makowski.task_service.exceptions.InvalidRequestException;
+import com.makowski.task_service.exceptions.EntityNotFoundException;
 import com.makowski.task_service.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,11 +18,11 @@ public class TaskService {
 
     public Task getTaskByID(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(RuntimeException::new);     //TODO change exception
+                .orElseThrow(() -> new EntityNotFoundException(Task.class, id));
     }
 
     public void ownerCheck(String loggedUser, String taskOwner) {
-        if (!loggedUser.equals(taskOwner)) throw new RuntimeException();  //TODO change exception
+        if (!loggedUser.equals(taskOwner)) throw new AccessDeniedException();
     }
 
     public Task addTask(String username, String title) {
@@ -38,8 +41,8 @@ public class TaskService {
 
     public Task changeTitle(String username, Long id, String title) {
         Task task = getTaskByID(id);
-        ownerCheck(username, task.getOwner());                      // TODO change exception
-        if (title.isBlank() || title.isEmpty()) throw new RuntimeException();
+        ownerCheck(username, task.getOwner());
+        if (title.isBlank() || title.isEmpty()) throw new InvalidRequestException("Incorrect task title");
         task.setTitle(title);
         return taskRepository.save(task);
     }
@@ -60,6 +63,6 @@ public class TaskService {
     public List<Task> getMyTasks(String username) {
         List<Task> tasks = taskRepository.findByOwner(username);
         if (!tasks.isEmpty()) return tasks;
-            else throw new RuntimeException();  //TODO change exc.
+            else throw new EntityNotFoundException("There are no tasks available for you");
     }
 }

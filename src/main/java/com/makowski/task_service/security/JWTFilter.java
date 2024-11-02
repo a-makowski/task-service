@@ -2,7 +2,9 @@ package com.makowski.task_service.security;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,16 +19,19 @@ public class JWTFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
         String authHeader = httpRequest.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            String username = authService.validateTokenGetUsername(token).block();
-
-            if (username == null) {
-                throw new ServletException("Invalid token or user not authorized");
+            try {
+                String username = authService.validateTokenGetUsername(token).block();
+                httpRequest.setAttribute("username", username);
+            } catch (Exception e) {
+                httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+                httpResponse.getWriter().write("Invalid token");
+                return;
             }
-            httpRequest.setAttribute("username", username);
         }
         chain.doFilter(request, response);
     }

@@ -1,5 +1,6 @@
 package com.makowski.task_service.security;
 
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -17,6 +18,12 @@ public class AuthService {
                 .uri("/user/validate-token")
                 .header("Authorization", token)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> {
+                    return Mono.error(new RuntimeException("Token validation failed: " + response.statusCode()));
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, response -> {
+                    return Mono.error(new RuntimeException("Server error: " + response.statusCode()));
+                })
                 .bodyToMono(String.class);
     }
 }

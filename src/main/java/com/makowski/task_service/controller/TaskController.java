@@ -19,7 +19,7 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<Task> addTask(HttpServletRequest request, @RequestBody String title) {
+    public ResponseEntity<Task> addTask(HttpServletRequest request, @RequestBody(required = false) String title) {
         return new ResponseEntity<>(taskService.addTask((String) request.getAttribute("username"), title), HttpStatus.CREATED);
     }
 
@@ -30,7 +30,7 @@ public class TaskController {
     }
 
     @PutMapping("/title/{id}")
-    public ResponseEntity<Task> changeTitle(HttpServletRequest request, @PathVariable Long id, @RequestBody String title) {
+    public ResponseEntity<Task> changeTitle(HttpServletRequest request, @PathVariable Long id, @RequestBody(required = false) String title) {
         return new ResponseEntity<>(taskService.changeTitle((String) request.getAttribute("username"), id, title), HttpStatus.OK);
     }
 

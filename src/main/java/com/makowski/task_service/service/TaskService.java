@@ -25,9 +25,15 @@ public class TaskService {
         if (!loggedUser.equals(taskOwner)) throw new AccessDeniedException();
     }
 
+    public void titleCheck(String title) {
+        if (title == null) throw new InvalidRequestException("Title can't be empty");
+        if (title.isBlank()) throw new InvalidRequestException("Title can't be blank");
+    }
+
     public Task addTask(String username, String title) {
         Task task = new Task();
         task.setOwner(username);
+        titleCheck(title);
         task.setTitle(title);
         task.setStatus(false);
         return taskRepository.save(task);
@@ -42,7 +48,7 @@ public class TaskService {
     public Task changeTitle(String username, Long id, String title) {
         Task task = getTaskByID(id);
         ownerCheck(username, task.getOwner());
-        if (title.isBlank() || title.isEmpty()) throw new InvalidRequestException("Incorrect task title");
+        titleCheck(title);
         task.setTitle(title);
         return taskRepository.save(task);
     }

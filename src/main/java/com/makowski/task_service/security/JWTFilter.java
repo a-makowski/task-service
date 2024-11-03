@@ -28,10 +28,12 @@ public class JWTFilter implements Filter {
                 String username = authService.validateTokenGetUsername(token).block();
                 httpRequest.setAttribute("username", username);
             } catch (Exception e) {
-                httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                httpResponse.getWriter().write("Invalid token");
+                httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid token");
                 return;
             }
+        } else {
+            httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Missing or invalid Authorization header");
+            return;
         }
         chain.doFilter(request, response);
     }

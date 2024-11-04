@@ -15,7 +15,7 @@ public class AuthService {
 
     public Mono<String> validateTokenGetUsername(String token) {
         return webClient.post()
-                .uri("/user/validate-token")
+                .uri("/validate-token")
                 .header("Authorization", token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response -> {

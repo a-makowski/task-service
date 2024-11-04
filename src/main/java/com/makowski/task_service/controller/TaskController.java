@@ -31,7 +31,7 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task has been successfully created", content = @Content(schema = @Schema(implementation = Task.class))),
             @ApiResponse(responseCode = "400", description = "Incorrect title for the task", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "401", description = "JWT Token not valid", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "JWT Token not valid", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
     public ResponseEntity<Task> addTask(HttpServletRequest request, @RequestBody(required = false) String title) {

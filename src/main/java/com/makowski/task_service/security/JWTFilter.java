@@ -23,9 +23,8 @@ public class JWTFilter implements Filter {
         String authHeader = httpRequest.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
             try {
-                String username = authService.validateTokenGetUsername(token).block();
+                String username = authService.validateTokenGetUsername(authHeader).block();
                 httpRequest.setAttribute("username", username);
             } catch (Exception e) {
                 httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid token");

@@ -130,8 +130,7 @@ class TaskServiceTest {
         task.setOwner("user");
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 
-        assertThrows(AccessDeniedException.class,
-                () -> taskService.changeTitle("wrongUser", 1L, "New Title"));
+        assertThrows(AccessDeniedException.class, () -> taskService.changeTitle("wrongUser", 1L, "New Title"));
     }
 
     @Test
@@ -141,8 +140,7 @@ class TaskServiceTest {
         task.setOwner("owner");
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 
-        assertThrows(InvalidRequestException.class,
-                () -> taskService.changeTitle("owner", 1L, " "));
+        assertThrows(InvalidRequestException.class, () -> taskService.changeTitle("owner", 1L, " "));
     }
 
     @Test
